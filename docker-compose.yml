@@ -1,14 +1,29 @@
-version: '3.8'
-
 services:
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: workflow-monitoring-backend
     ports:
       - "3000:3000"
     environment:
       - PORT=3000
       - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - workflow-network
+
+  frontend:
+    build:
+      context: ../workflw-monitoring-frontend
+      dockerfile: Dockerfile
+    container_name: workflow-monitoring-frontend
+    ports:
+      - "4201:80"
+    environment:
+      - BACKEND_URL=http://backend:3000
+    depends_on:
+      - backend
     restart: unless-stopped
     networks:
       - workflow-network
